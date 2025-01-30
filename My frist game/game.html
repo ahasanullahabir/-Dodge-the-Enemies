@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dodge the Enemies</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { text-align: center; background: #222; color: white; font-family: Arial, sans-serif; }
+        canvas { background: #333; display: block; margin: 20px auto; border: 2px solid white; }
+    </style>
+</head>
+<body>
+    <h1>Dodge the Enemies</h1>
+    <canvas id="gameCanvas" width="500" height="400"></canvas>
+    <script>
+        const canvas = document.getElementById("gameCanvas");
+        const ctx = canvas.getContext("2d");
+        
+        let player = { x: 225, y: 350, width: 50, height: 50, speed: 5 };
+        let enemies = [];
+        let gameOver = false;
+        
+        function createEnemy() {
+            let size = Math.random() * 40 + 20;
+            enemies.push({ x: Math.random() * (canvas.width - size), y: -size, width: size, height: size, speed: Math.random() * 3 + 2 });
+        }
+        
+        function update() {
+            if (gameOver) return;
+            enemies.forEach(enemy => enemy.y += enemy.speed);
+            enemies = enemies.filter(enemy => enemy.y < canvas.height);
+            if (Math.random() < 0.02) createEnemy();
+            enemies.forEach(enemy => {
+                if (player.x < enemy.x + enemy.width && player.x + player.width > enemy.x && player.y < enemy.y + enemy.height && player.y + player.height > enemy.y) {
+                    gameOver = true;
+                    alert("Game Over! Reload to play again.");
+                }
+            });
+        }
+        
+        function draw() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            ctx.fillStyle = "lightblue";
+            ctx.fillRect(player.x, player.y, player.width, player.height);
+            ctx.fillStyle = "red";
+            enemies.forEach(enemy => ctx.fillRect(enemy.x, enemy.y, enemy.width, enemy.height));
+        }
+        
+        function loop() {
+            update();
+            draw();
+            requestAnimationFrame(loop);
+        }
+        
+        document.addEventListener("keydown", event => {
+            if (event.key === "ArrowLeft" && player.x > 0) player.x -= player.speed;
+            if (event.key === "ArrowRight" && player.x < canvas.width - player.width) player.x += player.speed;
+        });
+        
+        loop();
+    </script>
+
+    <p style="color: aqua;"> developed by Ahasan ullah </p>
+</body>
+</html>
